@@ -29,10 +29,11 @@ baselineTable(
 
 \item{placeholder}{The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).}
 
-\item{welch.test}{If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
-#' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.}
+\item{welch.test}{If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.}
 
 \item{na.statistics}{Should Missing value estimates be included in the output? Default is "all"; i.e., to provide all missingness statistics. Other options include "if.applicable" and "none". "if.applicable" includes missingness statistics for those variables, where NAs are present.}
+
+\item{print.vars}{Should variable names be included in the output (in addition to labels)? Default is FALSE.}
 }
 \description{
 This function creates a baseline table including descriptive statistics and automates work for a "Table 1" in scientific publications.
@@ -41,11 +42,18 @@ This function creates a baseline table including descriptive statistics and auto
 data("airquality")
 airquality$Period = ifelse(airquality$Month \%in\% 5:7, "Early Summer", "Late Summer")
 
-baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"))
-baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"),
-labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)", "Period"))
-baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp"),
-labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)"),
+baselineTable(data = airquality,
+vars = c("Ozone", "Solar.R",
+"Wind", "Temp", "Period"))
+baselineTable(data = airquality,
+vars = c("Ozone", "Solar.R",
+"Wind", "Temp", "Period"),
+labels = c("Ozone (ppb)", "Solar R (lang)",
+"Wind (mph)", "Temperature (degrees F)", "Period"))
+baselineTable(data = airquality,
+vars = c("Ozone", "Solar.R", "Wind", "Temp"),
+labels = c("Ozone (ppb)", "Solar R (lang)",
+"Wind (mph)", "Temperature (degrees F)"),
 grouping.var = "Period", round_dec = 1)
 }
 \author{
