@@ -4,16 +4,27 @@
 \alias{addGroupInfoToTable}
 \title{A helper function for baselineTable to specify additional rows split by Group}
 \usage{
-addGroupInfoToTable(data, output, vars, round_dec, grouping.var)
+addGroupInfoToTable(
+  data,
+  output,
+  vars,
+  placeholder,
+  round_dec,
+  grouping.var,
+  welch.test
+)
 }
 \arguments{
-\item{...}{It takes arguments from baselineTable}
+\item{...}{Function takes arguments from baselineTable}
 }
 \description{
 This function is called within baselineTable and creates additional rows for each level specified in grouping.var. It also uses standard statistical tests to compare descriptive statistics between groups.
 }
 \examples{
 addGroupInfoToTable()
+}
+\author{
+Nils Kappelmann
 }
 \keyword{Baseline}
 \keyword{Table}

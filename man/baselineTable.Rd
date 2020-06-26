@@ -10,6 +10,8 @@ baselineTable(
   labels = NULL,
   grouping.var = NULL,
   round_dec = 2,
+  placeholder = "   ",
+  welch.test = FALSE,
   print.vars = FALSE
 )
 }
@@ -24,13 +26,27 @@ baselineTable(
 
 \item{round_dec}{Number of decimal spaced to-be-included in baseline Table. Default is 2}
 
-\item{print.vars}{Should variable names be included in the output (in addition to labels)? Default is FALSE.}
+\item{placeholder}{The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).}
+
+\item{welch.test}{If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
+#' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.}
 }
 \description{
 This function creates a baseline table including descriptive statistics and automates work for a "Table 1" in scientific publications.
 }
 \examples{
-baselineTable()
+data("airquality")
+airquality$Period = ifelse(airquality$Month \%in\% 5:7, "Early Summer", "Late Summer")
+
+baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"))
+baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"),
+labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)", "Period"))
+baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp"),
+labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)"),
+grouping.var = "Period", round_dec = 1)
+}
+\author{
+Nils Kappelmann
 }
 \keyword{Baseline}
 \keyword{Table}

@@ -4,7 +4,7 @@
 \alias{createOutputTable}
 \title{A helper function for baselineTable to create the general output table}
 \usage{
-createOutputTable(data, vars, labels, var.details, round_dec)
+createOutputTable(data, vars, labels, round_dec, placeholder, var.details)
 }
 \arguments{
 \item{var.details}{This additional argument specifies nature of variables (i.e., continuous or categorical). For detailed documentation, see the original code from baselineTable.}
@@ -16,6 +16,9 @@ This function is called within baselineTable and creates additional rows for eac
 }
 \examples{
 createOutputTable()
+}
+\author{
+Nils Kappelmann
 }
 \keyword{Baseline}
 \keyword{Table}
