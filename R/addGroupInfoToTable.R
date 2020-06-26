@@ -11,6 +11,7 @@ addGroupInfoToTable <- function(
   data,
   output,
   vars,
+  round_dec,
   grouping.var
   )   {
 

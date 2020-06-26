@@ -8,7 +8,13 @@
 #' @examples
 #' createOutputTable()
 
-createOutputTable <- function(data, vars, labels, var.details, round_dec)   {
+createOutputTable <- function(
+  data,
+  vars,
+  labels,
+  var.details,
+  round_dec
+  )   {
 
   ## Create empty table
   output = data.frame(vars = character(),
