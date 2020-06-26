@@ -8,7 +8,7 @@ baselineTable(
   data,
   vars,
   labels = NULL,
-  grouping.var,
+  grouping.var = NULL,
   round_dec = 2,
   print.vars = FALSE
 )

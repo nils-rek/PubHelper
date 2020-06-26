@@ -4,7 +4,7 @@
 \alias{addGroupInfoToTable}
 \title{A helper function for baselineTable to specify additional rows split by Group}
 \usage{
-addGroupInfoToTable(data, output, vars, grouping.var)
+addGroupInfoToTable(data, output, vars, round_dec, grouping.var)
 }
 \arguments{
 \item{...}{It takes arguments from baselineTable}
