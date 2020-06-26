@@ -9,6 +9,7 @@
 #' @param placeholder The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).
 #' @param welch.test If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
 #' #' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.
+#' @param na.statistics Should Missing value estimates be included in the output? Default is "all"; i.e., to provide all missingness statistics. Other options include "if.applicable" and "none". "if.applicable" includes missingness statistics for those variables, where NAs are present.
 #' @keywords Baseline Table
 #' @export
 #' @author Nils Kappelmann
@@ -25,12 +26,14 @@
 
 
 baselineTable <- function(
-  data, vars,
+  data,
+  vars,
   labels = NULL,
   grouping.var = NULL,
   round_dec = 2,
   placeholder = "   ",
   welch.test = FALSE,
+  na.statistics = "all",
   print.vars = FALSE
   )     {
 
@@ -66,6 +69,32 @@ baselineTable <- function(
     output = addGroupInfoToTable(data = data, output = output,
                                  vars = vars, grouping.var = grouping.var,
                                  placeholder = placeholder,  welch.test = welch.test)
+  }
+
+  ## Remove missingness rows if specified using na.statistics argument
+  if(na.statistics == "none")  {
+
+    # Move test statistic up one row if !is.null(grouping.var)
+    if(!is.null(grouping.var))  {
+      output$test = c(output$test[2:length(output$test)], NA)
+    }
+
+    # Delete missing value rows
+    row_to_delete = output$description == paste0(placeholder, "Missing (%)")
+    output = output[!row_to_delete,]
+
+  } else if(na.statistics == "if.applicable") {
+
+    # Move test statistic up one row if !is.null(grouping.var)
+    if(!is.null(grouping.var))  {
+      output$test = c(output$test[2:length(output$test)], NA)
+    }
+
+    # Delete missing value rows if there are no missing values
+    row_to_delete = output$description == paste0(placeholder, "Missing (%)") &
+      output$statistic == "0 (0%)"
+    output = output[!row_to_delete,]
+
   }
 
   ## Remove temporary variables

@@ -12,6 +12,7 @@ baselineTable(
   round_dec = 2,
   placeholder = "   ",
   welch.test = FALSE,
+  na.statistics = "all",
   print.vars = FALSE
 )
 }
@@ -30,6 +31,8 @@ baselineTable(
 
 \item{welch.test}{If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
 #' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.}
+
+\item{na.statistics}{Should Missing value estimates be included in the output? Default is "all"; i.e., to provide all missingness statistics. Other options include "if.applicable" and "none". "if.applicable" includes missingness statistics for those variables, where NAs are present.}
 }
 \description{
 This function creates a baseline table including descriptive statistics and automates work for a "Table 1" in scientific publications.
