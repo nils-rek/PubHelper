@@ -50,7 +50,7 @@ createOutputTable <- function(
     output[newrows, "vars"] = vars[i]
     output[newrows, "output.type"] = output.type
     output[newrows_start, "description"] = labels[i]
-    output[newrows_end, "description"] = paste0(placeholder, "N Missing (%)")
+    output[newrows_end, "description"] = paste0(placeholder, "Missing (%)")
 
     ## Write differently for continuous and categorical variables
     if(output.type == "cont")     {

@@ -105,7 +105,7 @@ addGroupInfoToTable <- function(
       }
 
       # Add missing
-      output[output$vars == i & output$description == paste0(placeholder, "N Missing (%)"), g] =
+      output[output$vars == i & output$description == paste0(placeholder, "Missing (%)"), g] =
         paste0(sum(is.na(data[data[,grouping.var] == g, i])), " (",
                round(sum(is.na(data[data[,grouping.var] == g, i])) / nrow_group * 100,
                      round_dec), "%)")
