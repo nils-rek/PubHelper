@@ -1,9 +1,10 @@
 #' A helper function for baselineTable to specify additional rows split by Group
 #'
 #' This function is called within baselineTable and creates additional rows for each level specified in grouping.var. It also uses standard statistical tests to compare descriptive statistics between groups.
-#' @param ... It takes arguments from baselineTable
+#' @param ... Function takes arguments from baselineTable
 #' @keywords Baseline Table
 #' @export
+#' @author Nils Kappelmann
 #' @examples
 #' addGroupInfoToTable()
 
@@ -11,8 +12,10 @@ addGroupInfoToTable <- function(
   data,
   output,
   vars,
+  placeholder,
   round_dec,
-  grouping.var
+  grouping.var,
+  welch.test
   )   {
 
   ## Get levels of new variable
@@ -35,7 +38,7 @@ addGroupInfoToTable <- function(
       if(length(group.levels) == 2) {
 
         # Run t-test
-        t.test_results = t.test(data[, i] ~ data[, grouping.var], var.equal = TRUE)
+        t.test_results = t.test(data[, i] ~ data[, grouping.var], var.equal = !welch.test)
         t.test_p = ifelse(t.test_results$p.value < 0.001, "<0.001",
                           as.character(round(t.test_results$p.value, 3)))
 
@@ -88,12 +91,12 @@ addGroupInfoToTable <- function(
       } else   {
 
         # Mean (SD)
-        output[output$vars == i & output$description == "   Mean (SD)", g] =
+        output[output$vars == i & output$description == paste0(placeholder, "Mean (SD)"), g] =
           paste0(round(mean(data[data[,grouping.var] == g, i], na.rm = TRUE), round_dec), " (",
                  round(sd(data[data[,grouping.var] == g, i], na.rm = TRUE), round_dec), ")")
 
         # Median (IQR)
-        output[output$vars == i & output$description == "   Median (IQR)", g] =
+        output[output$vars == i & output$description == paste0(placeholder, "Median (IQR)"), g] =
           paste0(round(median(data[data[,grouping.var] == g, i], na.rm = TRUE), round_dec),
                  " (", round(summary(data[data[,grouping.var] == g, i])[2], round_dec), "-",
                  round(summary(data[data[,grouping.var] == g, i])[5], round_dec), ")")
@@ -102,7 +105,7 @@ addGroupInfoToTable <- function(
       }
 
       # Add missing
-      output[output$vars == i & output$description == "   N Missing (%)", g] =
+      output[output$vars == i & output$description == paste0(placeholder, "N Missing (%)"), g] =
         paste0(sum(is.na(data[data[,grouping.var] == g, i])), " (",
                round(sum(is.na(data[data[,grouping.var] == g, i])) / nrow_group * 100,
                      round_dec), "%)")

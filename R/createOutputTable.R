@@ -4,6 +4,7 @@
 #' @param ... It takes arguments from baselineTable
 #' @param var.details This additional argument specifies nature of variables (i.e., continuous or categorical). For detailed documentation, see the original code from baselineTable.
 #' @keywords Baseline Table
+#' @author Nils Kappelmann
 #' @export
 #' @examples
 #' createOutputTable()
@@ -12,8 +13,9 @@ createOutputTable <- function(
   data,
   vars,
   labels,
-  var.details,
-  round_dec
+  round_dec,
+  placeholder,
+  var.details
   )   {
 
   ## Create empty table
@@ -48,13 +50,13 @@ createOutputTable <- function(
     output[newrows, "vars"] = vars[i]
     output[newrows, "output.type"] = output.type
     output[newrows_start, "description"] = labels[i]
-    output[newrows_end, "description"] = "   N Missing (%)"
+    output[newrows_end, "description"] = paste0(placeholder, "N Missing (%)")
 
     ## Write differently for continuous and categorical variables
     if(output.type == "cont")     {
       # Set descriptions
-      output[newrows[2:3], "description"] = paste0("   ", c("Mean (SD)",
-                                                            "Median (IQR)"))
+      output[newrows[2:3], "description"] = paste0(placeholder, c("Mean (SD)",
+                                                                  "Median (IQR)"))
 
       # Fill Mean (SD)
       output[newrows[2], "statistic"] =
@@ -86,7 +88,7 @@ createOutputTable <- function(
       output[newrows[2:(length(newrows) - 1)], "levels"] =
         output[newrows[2:(length(newrows) - 1)], "description"]
       output[newrows[2:(length(newrows) - 1)], "description"] =
-        paste0("   ", output.values)
+        paste0(placeholder, output.values)
     }
 
     ## Set missing N (%)

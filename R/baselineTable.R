@@ -6,11 +6,22 @@
 #' @param labels Vector of labels to be set in rows for baseline Table. Needs to be the same length as vars. Defaults to vars values.
 #' @param grouping.var Optional variable name if you want to include extra rows (and statistical tests) for baseline variables split by groups.
 #' @param round_dec Number of decimal spaced to-be-included in baseline Table. Default is 2
-#' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.
+#' @param placeholder The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).
+#' @param welch.test If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
+#' #' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.
 #' @keywords Baseline Table
 #' @export
+#' @author Nils Kappelmann
 #' @examples
-#' baselineTable()
+#' data("airquality")
+#' airquality$Period = ifelse(airquality$Month %in% 5:7, "Early Summer", "Late Summer")
+#'
+#' baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"))
+#' baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp", "Period"),
+#' labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)", "Period"))
+#' baselineTable(data = airquality, vars = c("Ozone", "Solar.R", "Wind", "Temp"),
+#' labels = c("Ozone (ppb)", "Solar R (lang)", "Wind (mph)", "Temperature (degrees F)"),
+#' grouping.var = "Period", round_dec = 1)
 
 
 baselineTable <- function(
@@ -18,6 +29,8 @@ baselineTable <- function(
   labels = NULL,
   grouping.var = NULL,
   round_dec = 2,
+  placeholder = "   ",
+  welch.test = FALSE,
   print.vars = FALSE
   )     {
 
@@ -45,12 +58,14 @@ baselineTable <- function(
 
   ## Create output table
   output = createOutputTable(data = data, vars = vars, labels = labels,
-                             var.details = var.details, round_dec = round_dec)
+                             var.details = var.details, round_dec = round_dec,
+                             placeholder = placeholder)
 
-  ## Extent table with grouping variables
+  ## Extend table with grouping variables
   if(!is.null(grouping.var)) {
     output = addGroupInfoToTable(data = data, output = output,
-                                 vars = vars, grouping.var = grouping.var)
+                                 vars = vars, grouping.var = grouping.var,
+                                 placeholder = placeholder,  welch.test = welch.test)
   }
 
   ## Remove temporary variables
