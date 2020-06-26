@@ -25,7 +25,7 @@ baselineTable(
 
 \item{grouping.var}{Optional variable name if you want to include extra rows (and statistical tests) for baseline variables split by groups.}
 
-\item{round_dec}{Number of decimal spaced to-be-included in baseline Table. Default is 2}
+\item{round_dec}{Number of decimal spaces to-be-included in baseline Table. Default is 2}
 
 \item{placeholder}{The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).}
 

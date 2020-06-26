@@ -5,7 +5,7 @@
 #' @param vars Vector of variables to be included as rows for baseline Table
 #' @param labels Vector of labels to be set in rows for baseline Table. Needs to be the same length as vars. Defaults to vars values.
 #' @param grouping.var Optional variable name if you want to include extra rows (and statistical tests) for baseline variables split by groups.
-#' @param round_dec Number of decimal spaced to-be-included in baseline Table. Default is 2
+#' @param round_dec Number of decimal spaces to-be-included in baseline Table. Default is 2
 #' @param placeholder The placeholder can be specified with indents descriptive statistics labels (e.g., Mean (SD)) by a given string. The default is "   " (i.e., three spaces).
 #' @param welch.test If grouping.var is specified and includes two groups only, The Welch test will be used to test for significant differences between groups on continuous variables. Default is FALSE.
 #' @param print.vars Should variable names be included in the output (in addition to labels)? Default is FALSE.
