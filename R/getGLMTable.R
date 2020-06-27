@@ -2,6 +2,8 @@
 #'
 #' This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
+#' @param intercept Should intercepts be included in the output? Default is TRUE
+#' @param exclude.covariates Specify covariates that should be excluded from the output.
 #' @keywords GLM; table
 #' @export
 #' @author Nils Kappelmann
@@ -12,7 +14,9 @@
 
 
 getGLMTable = function(
-  model = NULL
+  model = NULL,
+  intercept = TRUE,
+  exclude.covariates = NULL
 ) {
 
   # Check if model was specified
@@ -24,7 +28,31 @@ getGLMTable = function(
   ## Call correct formatting function depending on glm_class
   if(identical(glm_class, "lm")) {output = format_lm(model = model)}
   else if(identical(glm_class, c("glm", "lm"))) {output = format_loglm(model = model)}
-  else  {stop("GLM formatting function not yet defined for model class.")}
+  else  {stop("GLMTable function not yet defined for model class.")}
+
+
+  ## Exclude intercept if indicated
+  if(intercept == FALSE)  {output = output[output$Predictor != "(Intercept)",]}
+
+  ## Exclude covariates if indicated
+  if(!is.null(exclude.covariates))  {
+
+    ## Save model fit statistics, so these won't be deleted
+    if(identical(glm_class, "lm") &
+       sum(!is.na(output[output$Predictor %in% exclude.covariates, "r.squared"])) == 1) {
+      lm_model.fit = output[nrow(output), c("r.squared", "adj.r.squared")]
+
+    }
+
+    ## Exclude covariate rows
+    output = output[output$Predictor %in% exclude.covariates == FALSE,]
+
+    ## Include fit statistics again if necessary
+    if(exists("lm_model.fit"))  {
+      output[nrow(output), c("r.squared", "adj.r.squared")] = lm_model.fit
+    }
+  }
+
 
   ## Return output
   return(output)

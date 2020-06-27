@@ -4,10 +4,14 @@
 \alias{getGLMTable}
 \title{Get a Table of GLM results}
 \usage{
-getGLMTable(model = NULL)
+getGLMTable(model = NULL, intercept = TRUE, exclude.covariates = NULL)
 }
 \arguments{
 \item{model}{Data needs to be entered that includes relevant variables for the baseline table}
+
+\item{intercept}{Should intercepts be included in the output? Default is TRUE}
+
+\item{exclude.covariates}{Specify covariates that should be excluded from the output.}
 }
 \description{
 This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications

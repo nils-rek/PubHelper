@@ -27,33 +27,13 @@ formatGLMTable = function(
   glm_class = class(model)
 
   # Run getGLMTable to get output data.frame
-  output = getGLMTable(model = model)
+  output = getGLMTable(model = model,
+                       intercept = intercept,
+                       exclude.covariates = exclude.covariates)
 
   ## Format P-value
   output$pval = ifelse(output$pval < 0.001, "<0.001",
                        as.character(round(output$pval, 3)))
-
-  ## Exclude intercept if indicated
-  if(intercept == FALSE)  {output = output[output$Predictor != "(Intercept)",]}
-
-  ## Exclude covariates if indicated
-  if(!is.null(exclude.covariates))  {
-
-    ## Save model fit statistics, so these won't be deleted
-    if(identical(glm_class, "lm") &
-       sum(!is.na(output[output$Predictor %in% exclude.covariates, "r.squared"])) == 1) {
-      lm_model.fit = output[nrow(output), c("r.squared", "adj.r.squared")]
-
-    }
-
-    ## Exclude covariate rows
-    output = output[output$Predictor %in% exclude.covariates == FALSE,]
-
-    ## Include fit statistics again if necessary
-    if(exists("lm_model.fit"))  {
-      output[nrow(output), c("r.squared", "adj.r.squared")] = lm_model.fit
-      }
-    }
 
   ## Return output depending on glm_class
   if(identical(glm_class, "lm")) {
