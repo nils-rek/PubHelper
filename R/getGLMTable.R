@@ -1,4 +1,4 @@
-#' Formatting GLM results for table export
+#' Get a Table of GLM results
 #'
 #' This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
@@ -11,8 +11,7 @@
 #' getGLMTable(model = model)
 
 
-
-formatGLMTable = function(
+getGLMTable = function(
   model = NULL
 ) {
 
