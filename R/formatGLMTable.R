@@ -23,6 +23,9 @@ formatGLMTable = function(
   lm.ci = FALSE
 ) {
 
+  # Get GLM class
+  glm_class = class(model)
+
   # Run getGLMTable to get output data.frame
   output = getGLMTable(model = model)
 
