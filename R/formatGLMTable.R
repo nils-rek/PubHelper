@@ -63,7 +63,7 @@ formatGLMTable = function(
                            round(SE, round_dec), ")"),
       OR.CI = paste0(round(OR, round_dec), " (",
                      round(ci.lb, round_dec), "-",
-                     round(ci.lb, round_dec), ")"),
+                     round(ci.ub, round_dec), ")"),
       Z.Value = round(zval, round_dec),
       P = pval
     ))
