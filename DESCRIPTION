@@ -1,13 +1,13 @@
 Package: PubHelper
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Facilitating Result-Processing for Scientific Publication
+Version: 0.0.1.0000
 Authors@R: 
-    person(given = "First",
-           family = "Last",
+    person(given = "Nils",
+           family = "Kappelmann",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "n.kappelmann@gmail.com",
+           comment = c(ORCID = "0000-0002-2923-4455"))
+Description: Facilitating result-processing for scientific publication.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to
     pick a license
 Encoding: UTF-8
