@@ -73,7 +73,7 @@ baselineTable <- function(
 
   ## Extend table with grouping variables
   if(!is.null(grouping.var)) {
-    output = addGroupInfoToTable(data = data, output = output,
+    output = addGroupInfoToTable(data = data, output = output, round_dec = round_dec,
                                  vars = vars, grouping.var = grouping.var,
                                  placeholder = placeholder,  welch.test = welch.test)
   }
