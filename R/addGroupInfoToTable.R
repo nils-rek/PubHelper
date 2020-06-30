@@ -19,7 +19,7 @@ addGroupInfoToTable <- function(
   )   {
 
   ## Get levels of new variable
-  group.levels = unique(data[, grouping.var])
+  group.levels = unique(as.character(data[, grouping.var]))
   group.levels = group.levels[!is.na(group.levels)]
 
   ## Create additional columns
