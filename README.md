@@ -4,13 +4,13 @@
  ## Installation
  To install the PubHelper package in *R*, first install the *devtools* package, which allows package installation from Github
  
- ```
+ ``` {r}
  install.packages("devtools")
  ```
 
 Next, load devtools, install the PubHelper package, and run the included functions:
 
-```
+``` {r}
 library("devtools")
 install_github("nkappelmann/PubHelper")
 library("PubHelper")
