@@ -74,6 +74,25 @@ formatGLMTable = function(
     ## Return lm output
     return(output)
 
+  } else if(identical(glm_class, "polr")) {
+
+    output = with(output, data.frame(
+      Predictor = Predictor,
+      Estimate.SE = paste0(round(Estimate, round_dec), " (",
+                           round(SE, round_dec), ")"),
+      OR.CI = paste0(round(OR, round_dec), " (",
+                     round(ci.lb, round_dec), "-",
+                     round(ci.ub, round_dec), ")"),
+      T.Value = round(tval, round_dec),
+      P = pval
+    ))
+
+    ## Set Intercept OR to "-"
+    output[output$Predictor == "(Intercept)", "OR.CI"] = "-"
+
+    ## Return lm output
+    return(output)
+
   }
 
 

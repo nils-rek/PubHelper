@@ -28,6 +28,7 @@ getGLMTable = function(
   ## Call correct formatting function depending on glm_class
   if(identical(glm_class, "lm")) {output = format_lm(model = model)}
   else if(identical(glm_class, c("glm", "lm"))) {output = format_loglm(model = model)}
+  else if(identical(glm_class, "polr")) {output = format_polr(model = model)}
   else  {stop("GLMTable function not yet defined for model class.")}
 
 
@@ -112,3 +113,43 @@ format_loglm = function(
   return(output)
 
 }
+
+
+
+
+# format_loglm-----------------------
+
+format_polr = function(
+  model = model
+) {
+
+  ## Create data.frame with model output
+  output = data.frame(
+    Predictor = names(coef(model)),
+    OR = exp(coef(model)),
+    Estimate = coef(model)
+  )
+
+  ## Get SE, t-value, and p-value from output
+  coeftable = summary(model)[["coefficients"]]
+  output[, c("SE", "tval")] =
+    coeftable[row.names(coeftable) %in% output$Predictor, c("Std. Error", "t value")]
+  output$pval = pnorm(abs(output$tval), lower.tail = FALSE) * 2
+
+  ## Calculate 95% CI
+  output[, c("ci.lb", "ci.ub")] = exp(confint.default(model))
+
+  ## Remove coeftable
+  rm(coeftable)
+
+  ## Return output
+  return(output)
+
+}
+
+
+
+
+
+
+
