@@ -4,7 +4,12 @@
 \alias{getGLMTable}
 \title{Get a Table of GLM results}
 \usage{
-getGLMTable(model = NULL, intercept = TRUE, exclude.covariates = NULL)
+getGLMTable(
+  model = NULL,
+  intercept = TRUE,
+  exclude.covariates = NULL,
+  mlm.model = NULL
+)
 }
 \arguments{
 \item{model}{Data needs to be entered that includes relevant variables for the baseline table}
@@ -12,6 +17,8 @@ getGLMTable(model = NULL, intercept = TRUE, exclude.covariates = NULL)
 \item{intercept}{Should intercepts be included in the output? Default is TRUE}
 
 \item{exclude.covariates}{Specify covariates that should be excluded from the output.}
+
+\item{mlm.model}{Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.}
 }
 \description{
 This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications

@@ -4,6 +4,7 @@
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
 #' @param intercept Should intercepts be included in the output? Default is TRUE
 #' @param exclude.covariates Specify covariates that should be excluded from the output.
+#' @param mlm.model Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.
 #' @keywords GLM; table
 #' @export
 #' @author Nils Kappelmann
@@ -16,7 +17,8 @@
 getGLMTable = function(
   model = NULL,
   intercept = TRUE,
-  exclude.covariates = NULL
+  exclude.covariates = NULL,
+  mlm.model = NULL
 ) {
 
   # Check if model was specified
@@ -28,7 +30,7 @@ getGLMTable = function(
   ## Call correct formatting function depending on glm_class
   if(identical(glm_class, "lm")) {output = format_lm(model = model)}
   else if(identical(glm_class, c("glm", "lm"))) {output = format_loglm(model = model)}
-  else if(identical(glm_class, "polr")) {output = format_polr(model = model)}
+  else if(identical(glm_class, "polr")) {output = format_polr(model = model, mlm.model = mlm.model)}
   else  {stop("GLMTable function not yet defined for model class.")}
 
 
@@ -117,10 +119,11 @@ format_loglm = function(
 
 
 
-# format_loglm-----------------------
+# format_polr------------------------
 
 format_polr = function(
-  model = model
+  model = model,
+  mlm.model = mlm.model
 ) {
 
   ## Create data.frame with model output
@@ -139,8 +142,19 @@ format_polr = function(
   ## Calculate 95% CI
   output[, c("ci.lb", "ci.ub")] = exp(confint.default(model))
 
-  ## Remove coeftable
-  rm(coeftable)
+  ## If a multinomial model is specified, the proportionality test will be computed.
+  if(!is.null(mlm.model)) {
+    M1 = logLik(model)
+    M2 = logLik(mlm.model)
+
+    G = -2 * (M1[1] - M2[1])
+
+    output[nrow(output), "prop.test"] = pchisq(G, 3, lower.tail = FALSE)
+
+  } else  {output[nrow(output), "prop.test"] = NA}
+
+  ## Remove temporary variables
+  rm(coeftable); rm(M1); rm(M2); rm(G)
 
   ## Return output
   return(output)

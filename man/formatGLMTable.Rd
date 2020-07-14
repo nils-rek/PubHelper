@@ -22,6 +22,8 @@ formatGLMTable(
 \item{round_dec}{Number of decimal spaces to-be-included in baseline Table. Default is 2}
 
 \item{lm.ci}{Indicate if 95\% confidence interval from LM should be included in output. Default is FALSE.}
+
+\item{mlm.model}{Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.}
 }
 \description{
 This function creates a formatted table including output from common GLM models.

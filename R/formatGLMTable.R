@@ -4,6 +4,7 @@
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
 #' @param intercept Should intercepts be included in the output? Default is TRUE
 #' @param exclude.covariates Specify covariates that should be excluded from the output.
+#' @param mlm.model Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.
 #' @param round_dec Number of decimal spaces to-be-included in baseline Table. Default is 2
 #' @param lm.ci Indicate if 95% confidence interval from LM should be included in output. Default is FALSE.
 #' @keywords GLM; table
@@ -29,7 +30,8 @@ formatGLMTable = function(
   # Run getGLMTable to get output data.frame
   output = getGLMTable(model = model,
                        intercept = intercept,
-                       exclude.covariates = exclude.covariates)
+                       exclude.covariates = exclude.covariates,
+                       mlm.model = mlm.model)
 
   ## Format P-value
   output$pval = ifelse(output$pval < 0.001, "<0.001",
@@ -84,7 +86,8 @@ formatGLMTable = function(
                      round(ci.lb, round_dec), "-",
                      round(ci.ub, round_dec), ")"),
       T.Value = round(tval, round_dec),
-      P = pval
+      P = pval,
+      Proportionality.Test = round(prop.test, round_dec)
     ))
 
     ## Set Intercept OR to "-"
