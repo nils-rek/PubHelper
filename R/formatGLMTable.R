@@ -87,7 +87,8 @@ formatGLMTable = function(
                      round(ci.ub, round_dec), ")"),
       T.Value = round(tval, round_dec),
       P = pval,
-      Proportionality.Test = round(prop.test, round_dec)
+      Proportionality.Test = ifelse(round(prop.test, 3) == 0, "<0.001",
+                                    as.character(round(prop.test, 3)))
     ))
 
     ## Set Intercept OR to "-"
