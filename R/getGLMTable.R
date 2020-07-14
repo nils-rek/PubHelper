@@ -151,10 +151,13 @@ format_polr = function(
 
     output[nrow(output), "prop.test"] = pchisq(G, 3, lower.tail = FALSE)
 
+    ## Remove temporary variables
+    rm(M1); rm(M2); rm(G)
+
   } else  {output[nrow(output), "prop.test"] = NA}
 
   ## Remove temporary variables
-  rm(coeftable); rm(M1); rm(M2); rm(G)
+  rm(coeftable)
 
   ## Return output
   return(output)
