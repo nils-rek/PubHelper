@@ -2,11 +2,9 @@
 #'
 #' This function creates a formatted table including output from common GLM models.
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
-#' @param intercept Should intercepts be included in the output? Default is TRUE
-#' @param exclude.covariates Specify covariates that should be excluded from the output.
-#' @param mlm.model Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.
 #' @param round_dec Number of decimal spaces to-be-included in baseline Table. Default is 2
 #' @param lm.ci Indicate if 95% confidence interval from LM should be included in output. Default is FALSE.
+#' @param ... Other arguments from getGLMTable
 #' @keywords GLM; table
 #' @export
 #' @author Nils Kappelmann
@@ -18,8 +16,6 @@
 
 formatGLMTable = function(
   model = NULL,
-  intercept = TRUE,
-  exclude.covariates = NULL,
   round_dec = 2,
   lm.ci = FALSE
 ) {
@@ -28,27 +24,25 @@ formatGLMTable = function(
   glm_class = class(model)
 
   # Run getGLMTable to get output data.frame
-  output = getGLMTable(model = model,
-                       intercept = intercept,
-                       exclude.covariates = exclude.covariates,
-                       mlm.model = mlm.model)
+  output = getGLMTable(model = model, ...)
 
   ## Format P-value
-  output$pval = ifelse(output$pval < 0.001, "<0.001",
-                       as.character(round(output$pval, 3)))
+  output$p.value = ifelse(output$p.value < 0.001, "<0.001",
+                          as.character(round(output$p.value, 3)))
 
   ## Return output depending on glm_class
   if(identical(glm_class, "lm")) {
 
     output = with(output, data.frame(
-      Predictor = Predictor,
-      Estimate.SE = paste0(round(Estimate, round_dec), " (",
-                               round(SE, round_dec), ")"),
-      CI = paste0(round(ci.lb, round_dec), "-", round(ci.ub, round_dec)),
-      T.Value = round(tval, round_dec),
-      P = pval,
+      Term = term,
+      Estimate.SE = paste0(round(estimate, round_dec), " (",
+                               round(std.error, round_dec), ")"),
+      CI = paste0(round(conf.low, round_dec), "-", round(conf.high, round_dec)),
+      T.Value = round(statistic, round_dec),
+      P = p.value,
       R2 = round(r.squared, round_dec),
-      R2.adj = round(adj.r.squared, round_dec)
+      R2.adj = round(adj.r.squared, round_dec),
+      N = nobs
     ))
 
     ## Delete CI if indicated
@@ -60,18 +54,18 @@ formatGLMTable = function(
   } else if(identical(glm_class, c("glm", "lm"))) {
 
     output = with(output, data.frame(
-      Predictor = Predictor,
-      Estimate.SE = paste0(round(Estimate, round_dec), " (",
-                           round(SE, round_dec), ")"),
+      Term = term,
+      Estimate.SE = paste0(round(estimate, round_dec), " (",
+                           round(std.error, round_dec), ")"),
       OR.CI = paste0(round(OR, round_dec), " (",
-                     round(ci.lb, round_dec), "-",
-                     round(ci.ub, round_dec), ")"),
-      Z.Value = round(zval, round_dec),
-      P = pval
+                     round(conf.int, round_dec), "-",
+                     round(conf.int, round_dec), ")"),
+      Z.Value = round(statistic, round_dec),
+      P = p.value
     ))
 
     ## Set Intercept OR to "-"
-    output[output$Predictor == "(Intercept)", "OR.CI"] = "-"
+    output[output$Term == "(Intercept)", "OR.CI"] = "-"
 
     ## Return lm output
     return(output)
@@ -79,20 +73,20 @@ formatGLMTable = function(
   } else if(identical(glm_class, "polr")) {
 
     output = with(output, data.frame(
-      Predictor = Predictor,
-      Estimate.SE = paste0(round(Estimate, round_dec), " (",
-                           round(SE, round_dec), ")"),
+      Term = term,
+      Estimate.SE = paste0(round(estimate, round_dec), " (",
+                           round(std.error, round_dec), ")"),
       OR.CI = paste0(round(OR, round_dec), " (",
-                     round(ci.lb, round_dec), "-",
-                     round(ci.ub, round_dec), ")"),
-      T.Value = round(tval, round_dec),
-      P = pval,
+                     round(conf.low, round_dec), "-",
+                     round(conf.high, round_dec), ")"),
+      T.Value = round(statistic, round_dec),
+      P = p.value,
       Proportionality.Test = ifelse(round(prop.test, 3) == 0, "<0.001",
                                     as.character(round(prop.test, 3)))
     ))
 
     ## Set Intercept OR to "-"
-    output[output$Predictor == "(Intercept)", "OR.CI"] = "-"
+    output[output$Term == "(Intercept)", "OR.CI"] = "-"
 
     ## Return lm output
     return(output)

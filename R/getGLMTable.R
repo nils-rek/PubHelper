@@ -2,9 +2,12 @@
 #'
 #' This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications
 #' @param model Data needs to be entered that includes relevant variables for the baseline table
-#' @param intercept Should intercepts be included in the output? Default is TRUE
+#' @param intercept Should intercepts be included in the output? Default is TRUE.
+#' @param conf.int Should confidence intervals be added to the output? Default is TRUE.
+#' @param conf.level If confidence intervals are added, what is the confidence level? Default is 0.95.
 #' @param exclude.covariates Specify covariates that should be excluded from the output.
-#' @param mlm.model Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.
+#' @param fit.indices Should all fit indices from broom::glance be included? Default is FALSE.
+#' @param polr.assumptioncheck Only if ordinal logistic regression is used. This calculates a multinomial model using the nnet package with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output under column name prop.test. Note that this code only works if variables aren't converted inside the fomula (i.e., factor(Y) ~ X does not work).
 #' @keywords GLM; table
 #' @export
 #' @author Nils Kappelmann
@@ -17,9 +20,15 @@
 getGLMTable = function(
   model = NULL,
   intercept = TRUE,
+  conf.int = TRUE,
+  conf.level = 0.95,
   exclude.covariates = NULL,
-  mlm.model = NULL
+  fit.indices = FALSE,
+  polr.assumptioncheck = FALSE
 ) {
+
+  # Load required broom package
+  require("broom")
 
   # Check if model was specified
   if(is.null(model))  {stop("Model must be specified.")}
@@ -30,32 +39,13 @@ getGLMTable = function(
   ## Call correct formatting function depending on glm_class
   if(identical(glm_class, "lm")) {output = format_lm(model = model)}
   else if(identical(glm_class, c("glm", "lm"))) {output = format_loglm(model = model)}
-  else if(identical(glm_class, "polr")) {output = format_polr(model = model, mlm.model = mlm.model)}
-  else  {stop("GLMTable function not yet defined for model class.")}
+  else if(identical(glm_class, "polr")) {
+    output = format_polr(model = model, mlm.model = mlm.model)
+    } else  {stop("GLMTable function not yet defined for model class.")}
 
 
   ## Exclude intercept if indicated
-  if(intercept == FALSE)  {output = output[output$Predictor != "(Intercept)",]}
-
-  ## Exclude covariates if indicated
-  if(!is.null(exclude.covariates))  {
-
-    ## Save model fit statistics, so these won't be deleted
-    if(identical(glm_class, "lm") &
-       sum(!is.na(output[output$Predictor %in% exclude.covariates, "r.squared"])) == 1) {
-      lm_model.fit = output[nrow(output), c("r.squared", "adj.r.squared")]
-
-    }
-
-    ## Exclude covariate rows
-    output = output[output$Predictor %in% exclude.covariates == FALSE,]
-
-    ## Include fit statistics again if necessary
-    if(exists("lm_model.fit"))  {
-      output[nrow(output), c("r.squared", "adj.r.squared")] = lm_model.fit
-    }
-  }
-
+  if(intercept == FALSE)  {output = output[output$term != "(Intercept)",]}
 
   ## Return output
   return(output)
@@ -69,20 +59,27 @@ format_lm = function(
   model = model
 ) {
 
-  ## Create data.frame with model output
-  output = data.frame(
-    Predictor = names(coef(model)),
-    Estimate = coef(model),
-    SE = sqrt(diag(vcov(model))),
-    tval = summary(model)[["coefficients"]][, "t value"],
-    pval = summary(model)[["coefficients"]][, "Pr(>|t|)"],
-    r.squared = c(rep(NA, length(coef(model)) - 1), summary(model)$r.squared),
-    adj.r.squared = c(rep(NA, length(coef(model)) - 1), summary(model)$adj.r.squared)
-  )
+  ## Extract model output
+  output = broom::tidy(model, conf.int = conf.int, conf.level = conf.level)
 
-  ## Calculate 95% CI
-  output$ci.lb = with(output, Estimate - 1.96* SE)
-  output$ci.ub = with(output, Estimate + 1.96* SE)
+  ## Exclude covariates
+  output = excludeCovariates(output = output, exclude.covariates = exclude.covariates)
+
+  ## Exctract fit indices
+  glance.model = glance(model)
+
+  # Delete non-required fit indices
+  if(fit.indices == FALSE)  {
+    glance.model = glance.model[, c("r.squared", "adj.r.squared", "nobs")]
+  }
+
+  # Add fit indices to output
+  if(nrow(output) > 1)  {
+    for(i in 1:(nrow(output) - 1))  {
+      glance.model = rbind(rep(NA, ncol(glance.model)), glance.model)
+      }
+  }
+  output[, colnames(glance.model)] = glance.model
 
   ## Return output
   return(output)
@@ -97,19 +94,38 @@ format_loglm = function(
   model = model
 ) {
 
-  ## Create data.frame with model output
-  output = data.frame(
-    Predictor = names(coef(model)),
-    OR = exp(coef(model)),
-    Estimate = coef(model),
-    SE = sqrt(diag(vcov(model))),
-    zval = summary(model)[["coefficients"]][, "z value"],
-    pval = summary(model)[["coefficients"]][, "Pr(>|z|)"]
-  )
+  ## Extract model output
+  output = broom::tidy(model, conf.int = conf.int, conf.level = conf.level)
 
-  ## Calculate 95% CI
-  output$ci.lb = exp(with(output, Estimate - 1.96* SE))
-  output$ci.ub = exp(with(output, Estimate + 1.96* SE))
+  ## Add OR and convert CI
+  output$OR = exp(output$estimate)
+  if(conf.int == TRUE)  {
+    temp.conf.int = exp(output[, c("conf.low", "conf.high")])
+    output[, c("conf.low", "conf.high")] = NULL
+    output[, c("conf.low", "conf.high")] = temp.conf.int
+    rm(temp.conf.int)
+  }
+
+  ## Exclude covariates
+  output = excludeCovariates(output = output, exclude.covariates = exclude.covariates)
+
+
+  ## Exctract fit indices
+  glance.model = glance(model)
+
+  # Delete non-required fit indices
+  if(fit.indices == FALSE)  {
+    glance.model = glance.model[, "nobs"]
+  }
+
+  # Add fit indices to output
+  if(nrow(output) > 1)  {
+    for(i in 1:(nrow(output) - 1))  {
+      glance.model = rbind(rep(NA, ncol(glance.model)), glance.model)
+    }
+  }
+  output[, colnames(glance.model)] = glance.model
+
 
   ## Return output
   return(output)
@@ -123,27 +139,54 @@ format_loglm = function(
 
 format_polr = function(
   model = model,
-  mlm.model = mlm.model
+  polr.assumptioncheck = polr.assumptioncheck
 ) {
 
-  ## Create data.frame with model output
-  output = data.frame(
-    Predictor = names(coef(model)),
-    OR = exp(coef(model)),
-    Estimate = coef(model)
-  )
+  ## Extract model output
+  output = broom::tidy(model, conf.int = conf.int, conf.level = conf.level)
 
-  ## Get SE, t-value, and p-value from output
-  coeftable = summary(model)[["coefficients"]]
-  output[, c("SE", "tval")] =
-    coeftable[row.names(coeftable) %in% output$Predictor, c("Std. Error", "t value")]
-  output$pval = pnorm(abs(output$tval), lower.tail = FALSE) * 2
+  ## Delete intercepts and coef.type column
+  output = output[output$coef.type == "coefficient",]
+  output$coef.type = NULL
 
-  ## Calculate 95% CI
-  output[, c("ci.lb", "ci.ub")] = exp(confint.default(model))
+  ## Add OR and convert CI
+  output$OR = exp(output$estimate)
+  if(conf.int == TRUE)  {
+    temp.conf.int = exp(output[, c("conf.low", "conf.high")])
+    output[, c("conf.low", "conf.high")] = NULL
+    output[, c("conf.low", "conf.high")] = temp.conf.int
+    rm(temp.conf.int)
+  }
 
-  ## If a multinomial model is specified, the proportionality test will be computed.
-  if(!is.null(mlm.model)) {
+  ## Exclude covariates
+  output = excludeCovariates(output = output, exclude.covariates = exclude.covariates)
+
+
+  ## Exctract fit indices
+  glance.model = glance(model)
+
+  # Delete non-required fit indices
+  if(fit.indices == FALSE)  {
+    glance.model = glance.model[, "nobs"]
+  }
+
+  # Add fit indices to output
+  if(nrow(output) > 1)  {
+    for(i in 1:(nrow(output) - 1))  {
+      glance.model = rbind(rep(NA, ncol(glance.model)), glance.model)
+    }
+  }
+  output[, colnames(glance.model)] = glance.model
+
+
+  ## Run mlm assumption if polr.assumptioncheck = TRUE
+  if(polr.assumptioncheck == TRUE)  {
+    # Get mlm data and change colnames
+    mlm.dat = model$model
+
+    mlm.model = nnet::multinom(formula = deparse(formula(model)), data = model$model,
+                               Hess = "Hessian" %in% names(model))
+
     M1 = logLik(model)
     M2 = logLik(mlm.model)
 
@@ -153,11 +196,7 @@ format_polr = function(
 
     ## Remove temporary variables
     rm(M1); rm(M2); rm(G)
-
   } else  {output[nrow(output), "prop.test"] = NA}
-
-  ## Remove temporary variables
-  rm(coeftable)
 
   ## Return output
   return(output)
@@ -166,7 +205,16 @@ format_polr = function(
 
 
 
+# format_lm--------------------------
 
+# excludeCovariates------------------
 
+excludeCovariates = function(
+  output = output,
+  exclude.covariates = exclude.covariates
+  )  {
+  output = output[!grepl(paste(exclude.covariates, collapse = "|"), output$term),]
+  return(output)
+}
 
 
