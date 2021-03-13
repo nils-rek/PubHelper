@@ -1,4 +1,4 @@
-#' Loop over getGLMTable or formatGLMTable IN PROGRESS!
+#' Loop over getGLMTable
 #'
 #' This function is a wrapper that loops over getGLMTable or formatGLMTable to create a single output data frame
 #' @param data Data.frame including model variables
@@ -12,10 +12,9 @@
 #' @author Nils Kappelmann
 #' @examples
 #' data(airquality)
-#' loopGLMTable(data = airquality, y = "Ozone", x = c("Solar.R", "Wind"), z = "Temp")
-#' getGLMTable(model = model)
+#' mapGLMTables(data = airquality, y = "Ozone", x = c("Solar.R", "Wind"), z = "Temp")
 
-loopGLMTable = function(
+mapGLMTables = function(
   data = NULL,
   y = NULL,
   x = NULL,
