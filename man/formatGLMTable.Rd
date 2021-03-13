@@ -4,26 +4,16 @@
 \alias{formatGLMTable}
 \title{Formatting GLM results for table export}
 \usage{
-formatGLMTable(
-  model = NULL,
-  intercept = TRUE,
-  exclude.covariates = NULL,
-  round_dec = 2,
-  lm.ci = FALSE
-)
+formatGLMTable(model = NULL, round_dec = 2, lm.ci = FALSE)
 }
 \arguments{
 \item{model}{Data needs to be entered that includes relevant variables for the baseline table}
-
-\item{intercept}{Should intercepts be included in the output? Default is TRUE}
-
-\item{exclude.covariates}{Specify covariates that should be excluded from the output.}
 
 \item{round_dec}{Number of decimal spaces to-be-included in baseline Table. Default is 2}
 
 \item{lm.ci}{Indicate if 95\% confidence interval from LM should be included in output. Default is FALSE.}
 
-\item{mlm.model}{Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.}
+\item{...}{Other arguments from getGLMTable}
 }
 \description{
 This function creates a formatted table including output from common GLM models.

@@ -8,17 +8,20 @@ getGLMTable(
   model = NULL,
   intercept = TRUE,
   exclude.covariates = NULL,
-  mlm.model = NULL
+  fit.indices = FALSE,
+  polr.assumptioncheck = FALSE
 )
 }
 \arguments{
 \item{model}{Data needs to be entered that includes relevant variables for the baseline table}
 
-\item{intercept}{Should intercepts be included in the output? Default is TRUE}
+\item{intercept}{Should intercepts be included in the output? Default is TRUE.}
 
 \item{exclude.covariates}{Specify covariates that should be excluded from the output.}
 
-\item{mlm.model}{Only if ordinal logistic regression is used. This includes a multinomial model with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output.}
+\item{fit.indices}{Should all fit indices from broom::glance be included? Default is FALSE.}
+
+\item{polr.assumptioncheck}{Only if ordinal logistic regression is used. This calculates a multinomial model using the nnet package with the same formula as the ordinal logistic regression model. If included, a p-value for the proportionality assumption will be included in the output under column name prop.test. Note that this code only works if variables aren't converted inside the fomula (i.e., factor(Y) ~ X does not work).}
 }
 \description{
 This function creates a table including output from common GLM models. formatGLMtable offers further formatting for direct inclusion in scientific publications
