@@ -1,6 +1,6 @@
-#' Loop over getGLMTable
+#' mapGLMTables: Loop over regression models and extract results.
 #'
-#' This function is a wrapper that loops over getGLMTable or formatGLMTable to create a single output data frame
+#' mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE.
 #' @param data Data.frame including model variables
 #' @param x Vector of predictor variables
 #' @param y Vector of outcome variables

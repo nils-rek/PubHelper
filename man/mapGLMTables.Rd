@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapGLMTables.R
 \name{mapGLMTables}
 \alias{mapGLMTables}
-\title{Loop over getGLMTable}
+\title{mapGLMTables: Loop over regression models and extract results.}
 \usage{
 mapGLMTables(
   data = NULL,
@@ -27,7 +27,7 @@ mapGLMTables(
 \item{simplify}{Should full lm models and GLMTables be excluded from output? Default is TRUE.}
 }
 \description{
-This function is a wrapper that loops over getGLMTable or formatGLMTable to create a single output data frame
+mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE.
 }
 \examples{
 data(airquality)
