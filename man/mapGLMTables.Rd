@@ -10,6 +10,7 @@ mapGLMTables(
   x = NULL,
   z = NULL,
   model.type = "lm",
+  format.output = FALSE,
   simplify = TRUE
 )
 }
@@ -23,6 +24,8 @@ mapGLMTables(
 \item{z}{Vector of covariates if covariates are included}
 
 \item{model.type}{Specify which statistical model to run. Options are "lm" for linear regression, "glm" for logistic regression, and "polr" for ordinal logistic regression}
+
+\item{format.output}{Should output be formatted for scientific publications? Default is FALSE.}
 
 \item{simplify}{Should full lm models and GLMTables be excluded from output? Default is TRUE.}
 }

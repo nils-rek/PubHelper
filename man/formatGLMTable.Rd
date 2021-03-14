@@ -4,7 +4,7 @@
 \alias{formatGLMTable}
 \title{Formatting GLM results for table export}
 \usage{
-formatGLMTable(model = NULL, round_dec = 2, lm.ci = FALSE)
+formatGLMTable(model = NULL, round_dec = 2, lm.ci = FALSE, ...)
 }
 \arguments{
 \item{model}{Data needs to be entered that includes relevant variables for the baseline table}
