@@ -27,7 +27,7 @@ mapGLMTables(
 \item{simplify}{Should full lm models and GLMTables be excluded from output? Default is TRUE.}
 }
 \description{
-mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE.
+mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE. Note that a complex model output is returned if predictor variables include factors with >2 levels.
 }
 \examples{
 data(airquality)

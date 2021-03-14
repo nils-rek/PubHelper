@@ -1,6 +1,6 @@
 Package: PubHelper
 Title: Facilitating Result-Processing for Scientific Publication
-Version: 0.0.2.0000
+Version: 0.0.2.1000
 Authors@R: 
     person(given = "Nils",
            family = "Kappelmann",

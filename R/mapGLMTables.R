@@ -1,6 +1,6 @@
 #' mapGLMTables: Loop over regression models and extract results.
 #'
-#' mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE.
+#' mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE. Note that a complex model output is returned if predictor variables include factors with >2 levels.
 #' @param data Data.frame including model variables
 #' @param x Vector of predictor variables
 #' @param y Vector of outcome variables
@@ -54,16 +54,37 @@ mapGLMTables = function(
   } else{stop("model.type not defined.")}
 
 
+  ## Check if any x variables are factors with >2 levels
+  if("factor" %in% map_chr(d[,x], class))  {
+    # Check if this factor has >2 levels
+    x_factor = x[map_chr(d[,x], class) == "factor"]
+    factor_with_many_levels = d[,x_factor] %>%
+      map_dbl(nlevels) > 2
+    factor_with_many_levels = any(factor_with_many_levels) == TRUE
+  } else  {factor_with_many_levels = FALSE}
+
   ## Add results to data
   GLMTables = map_dfr(models, getGLMTable,
                      intercept = FALSE, exclude.covariates = z)
 
-  output[,colnames(GLMTables)] = GLMTables
+  if(factor_with_many_levels == FALSE)  {
+    output[,colnames(GLMTables)] = GLMTables
+  }
 
   ## Add complex model results if simplify = FALSE
   if(simplify == FALSE) {
     output$models = models
     output$GLMTables = map(models, getGLMTable)
+    if(factor_with_many_levels == TRUE) {
+      message("Note that a factor with >2 levels was present in x.\nTherefore, the output object is more complex and\nindividual model results can be obtained using: $GLMTables[[n]].")
+    }
+  }
+
+  ## Add GLMTables if simplify = TRUE and factor_with_many_levels = TRUE
+  if(simplify == TRUE & factor_with_many_levels == TRUE)  {
+    message("Note that a factor with >2 levels was present in x.\nTherefore, the output object is more complex and\nindividual model results can be obtained using: $GLMTables[[n]].")
+    output$GLMTables = map(models, getGLMTable,
+                           intercept = FALSE, exclude.covariates = z)
   }
 
 
