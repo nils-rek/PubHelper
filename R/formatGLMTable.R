@@ -17,7 +17,8 @@
 formatGLMTable = function(
   model = NULL,
   round_dec = 2,
-  lm.ci = FALSE
+  lm.ci = FALSE,
+  ...
 ) {
 
   # Get GLM class
