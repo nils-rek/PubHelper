@@ -59,8 +59,8 @@ formatGLMTable = function(
       Estimate.SE = paste0(round(estimate, round_dec), " (",
                            round(std.error, round_dec), ")"),
       OR.CI = paste0(round(OR, round_dec), " (",
-                     round(conf.int, round_dec), "-",
-                     round(conf.int, round_dec), ")"),
+                     round(conf.low, round_dec), "-",
+                     round(conf.high, round_dec), ")"),
       Z.Value = round(statistic, round_dec),
       P = p.value
     ))
