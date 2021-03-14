@@ -21,7 +21,7 @@ mapGLMTables = function(
   x = NULL,
   z = NULL,
   model.type = "lm",
-  format = FALSE,
+  format.output = FALSE,
   simplify = TRUE
 ) {
 
