@@ -6,6 +6,7 @@
 #' @param y Vector of outcome variables
 #' @param z Vector of covariates if covariates are included
 #' @param model.type Specify which statistical model to run. Options are "lm" for linear regression, "glm" for logistic regression, and "polr" for ordinal logistic regression
+#' @param format.output Should output be formatted for scientific publications? Default is FALSE.
 #' @param simplify Should full lm models and GLMTables be excluded from output? Default is TRUE.
 #' @keywords GLM; table
 #' @export
@@ -20,6 +21,7 @@ mapGLMTables = function(
   x = NULL,
   z = NULL,
   model.type = "lm",
+  format = FALSE,
   simplify = TRUE
 ) {
 
@@ -56,22 +58,29 @@ mapGLMTables = function(
 
   ## Check if any x variables are factors with >2 levels
   if("factor" %in% map_chr(d[,x], class))  {
-    # Check if this factor has >2 levels
     x_factor = x[map_chr(d[,x], class) == "factor"]
     factor_with_many_levels = d[,x_factor] %>%
       map_dbl(nlevels) > 2
     factor_with_many_levels = any(factor_with_many_levels) == TRUE
   } else  {factor_with_many_levels = FALSE}
 
-  ## Add results to data
-  GLMTables = map_dfr(models, getGLMTable,
-                     intercept = FALSE, exclude.covariates = z)
 
+  ## Add results to data
+  if(format.output == FALSE)  {
+    GLMTables = map_dfr(models, getGLMTable,
+                        intercept = FALSE, exclude.covariates = z)
+  } else if(format.output == TRUE)  {
+    GLMTables = map_dfr(models, formatGLMTable,
+                        intercept = FALSE, exclude.covariates = z)
+  } else  {stop("format.output must be logical.")}
+
+
+  # Add results if x includes no factor w/ >2 levels
   if(factor_with_many_levels == FALSE)  {
     output[,colnames(GLMTables)] = GLMTables
   }
 
-  ## Add complex model results if simplify = FALSE
+  # Add complex model results if simplify = FALSE
   if(simplify == FALSE) {
     output$models = models
     output$GLMTables = map(models, getGLMTable)
@@ -80,7 +89,7 @@ mapGLMTables = function(
     }
   }
 
-  ## Add GLMTables if simplify = TRUE and factor_with_many_levels = TRUE
+  # Add GLMTables if simplify = TRUE and x includes factor w/ >2 levels
   if(simplify == TRUE & factor_with_many_levels == TRUE)  {
     message("Note that a factor with >2 levels was present in x.\nTherefore, the output object is more complex and\nindividual model results can be obtained using: $GLMTables[[n]].")
     output$GLMTables = map(models, getGLMTable,
