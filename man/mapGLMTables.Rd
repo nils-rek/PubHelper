@@ -27,7 +27,7 @@ mapGLMTables(
 
 \item{format.output}{Should output be formatted for scientific publications? Default is FALSE.}
 
-\item{simplify}{Should full lm models and GLMTables be excluded from output? Default is TRUE.}
+\item{simplify}{Should results be simplified to relevant regression parameters of the predictor? If not, full lm models, GLMTables, and plots to check model assumptions (using the performance package) are included in the output. Default is simplify=TRUE.}
 }
 \description{
 mapGLMTables loops over regression models (linear, logistic, & ordinal logistic) and returns summarised output from getGLMTable. It is possible to include covariates, which are automatically excluded from the output. However, the full output can be obtained as a more complex output by setting simplify=FALSE. Note that a complex model output is returned if predictor variables include factors with >2 levels.

@@ -7,7 +7,7 @@
 #' @param z Vector of covariates if covariates are included
 #' @param model.type Specify which statistical model to run. Options are "lm" for linear regression, "glm" for logistic regression, and "polr" for ordinal logistic regression
 #' @param format.output Should output be formatted for scientific publications? Default is FALSE.
-#' @param simplify Should full lm models and GLMTables be excluded from output? Default is TRUE.
+#' @param simplify Should results be simplified to relevant regression parameters of the predictor? If not, full lm models, GLMTables, and plots to check model assumptions (using the performance package) are included in the output. Default is simplify=TRUE.
 #' @keywords GLM; table
 #' @export
 #' @author Nils Kappelmann
@@ -27,6 +27,8 @@ mapGLMTables = function(
 
   ## Add required packages
   require("tidyverse")
+  require("performance")
+  require("see")
 
   ## Rename data to avoid recursive errors
   d = data
@@ -84,6 +86,7 @@ mapGLMTables = function(
   if(simplify == FALSE) {
     output$models = models
     output$GLMTables = map(models, getGLMTable)
+    output$assumptions = map(models, check_model)
     if(factor_with_many_levels == TRUE) {
       message("Note that a factor with >2 levels was present in x.\nTherefore, the output object is more complex and\nindividual model results can be obtained using: $GLMTables[[n]].")
     }
