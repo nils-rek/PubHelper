@@ -1,5 +1,5 @@
 # PubHelper
- This R package includes functions that help me in running analyses or in preparing manuscripts for scientific publications.
+ This R package includes functions that help me in running GLM analyses and in preparing manuscripts for scientific publications.
  
 ## Installation
  
